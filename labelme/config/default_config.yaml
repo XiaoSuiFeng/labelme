@@ -1,15 +1,15 @@
-auto_save: false
+auto_save: true
 display_label_popup: true
 instance_label_auto_increment: true
-store_data: true
+store_data: false
 keep_prev: false
 logger_level: info
 
 flags: null
 label_flags: null
-labels: null
+labels: [ignore, line, person, car, truck, bus, motocycle, bicycle, traffic light]
 file_search: null
-sort_labels: true
+sort_labels: false
 validate_label: null
 
 # main
@@ -63,18 +63,18 @@ shortcuts:
   fit_width: Ctrl+Shift+F
 
   add_point: Ctrl+Shift+P
-  create_polygon: Ctrl+N
+  create_polygon: W
   create_rectangle: Ctrl+R
   create_circle: null
   create_line: null
   create_point: null
-  create_linestrip: null
+  create_linestrip: Ctrl+L
   edit_polygon: Ctrl+J
   delete_polygon: Delete
   duplicate_polygon: Ctrl+D
   undo: Ctrl+Z
   undo_last_point: [Ctrl+Z, Backspace]
   edit_label: Ctrl+E
-  edit_line_color: Ctrl+L
-  edit_fill_color: Ctrl+Shift+L
-  toggle_keep_prev_mode: Ctrl+P
+  edit_line_color: Alt+L
+  edit_fill_color: Alt+Shift+L
+  toggle_keep_prev_mode: null
