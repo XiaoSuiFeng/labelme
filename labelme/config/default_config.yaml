@@ -7,7 +7,8 @@ logger_level: info
 
 flags: null
 label_flags: null
-labels: [ignore, line, person, car, truck, bus, motocycle, bicycle, traffic light]
+# labels: [ignore, line, person, car, truck, bus, motocycle, bicycle, traffic light]
+labels: [line, car]
 file_search: null
 sort_labels: false
 validate_label: null

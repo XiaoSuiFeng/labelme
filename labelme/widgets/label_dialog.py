@@ -76,6 +76,7 @@ class LabelDialog(QtWidgets.QDialog):
             self.labelList.setDragDropMode(
                 QtWidgets.QAbstractItemView.InternalMove)
         self.labelList.currentItemChanged.connect(self.labelSelected)
+        self.labelList.itemDoubleClicked.connect(self.validate)
         self.edit.setListWidget(self.labelList)
         layout.addWidget(self.labelList)
         # label_flags
