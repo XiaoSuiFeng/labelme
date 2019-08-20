@@ -7,6 +7,9 @@ import yaml
 
 from qtpy import QtWidgets
 
+ROOT_DIR = os.path.abspath("../")
+sys.path.append(ROOT_DIR)
+
 from labelme import __appname__
 from labelme import __version__
 from labelme.app import MainWindow
