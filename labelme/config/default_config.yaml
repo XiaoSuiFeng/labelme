@@ -6,7 +6,7 @@ keep_prev: false
 logger_level: info
 
 flags: null
-label_flags: null
+label_flags: {.*:[iscrowd]}
 # labels: [ignore, line, person, car, truck, bus, motocycle, bicycle, traffic light]
 labels: [line, car]
 file_search: null
