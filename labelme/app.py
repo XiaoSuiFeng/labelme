@@ -317,6 +317,9 @@ class MainWindow(QtWidgets.QMainWindow):
         addPoint = action('Add Point to Edge', self.canvas.addPointToEdge,
                           None, 'edit', 'Add point to the nearest edge',
                           enabled=False)
+        deletePoint = action('Delete current point', self.deletePointFromShape,
+                          None, 'edit', 'Delete current point from shape',
+                          enabled=False)
 
         undo = action('Undo', self.undoShapeEdit, shortcuts['undo'], 'undo',
                       'Undo last add and edit of shape', enabled=False)
@@ -415,7 +418,7 @@ class MainWindow(QtWidgets.QMainWindow):
             toggleKeepPrevMode=toggle_keep_prev_mode,
             delete=delete, edit=edit, copy=copy,
             undoLastPoint=undoLastPoint, undo=undo,
-            addPoint=addPoint,
+            addPoint=addPoint, deletePoint=deletePoint,
             createMode=createMode, editMode=editMode,
             createRectangleMode=createRectangleMode,
             createCircleMode=createCircleMode,
@@ -448,6 +451,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 undo,
                 undoLastPoint,
                 addPoint,
+                deletePoint,
             ),
             onLoadActive=(
                 close,
@@ -463,6 +467,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.canvas.edgeSelected.connect(self.actions.addPoint.setEnabled)
+        self.canvas.vertexSelected.connect(self.actions.deletePoint.setEnabled)
 
         self.menus = utils.struct(
             file=self.menu('&File'),
@@ -1039,6 +1044,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.addLabel(shape)
         self.setDirty()
 
+    def deletePointFromShape(self):
+        if (self.canvas.hShape is None or
+                self.canvas.hVertex is None):
+            return
+        if len(self.canvas.hShape.points) <= 3:
+            self.deleteSelectedShape()
+        else:
+            self.canvas.deletePointFromShape()
+        
     def labelSelectionChanged(self):
         if self._noSelectionSlot:
             return

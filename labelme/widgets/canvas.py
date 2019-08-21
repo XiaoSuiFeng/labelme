@@ -27,6 +27,7 @@ class Canvas(QtWidgets.QWidget):
     shapeMoved = QtCore.Signal()
     drawingPolygon = QtCore.Signal(bool)
     edgeSelected = QtCore.Signal(bool)
+    vertexSelected = QtCore.Signal(bool)
 
     CREATE, EDIT = 0, 1
 
@@ -267,7 +268,8 @@ class Canvas(QtWidgets.QWidget):
                 self.hShape.highlightClear()
                 self.update()
             self.hVertex, self.hShape, self.hEdge = None, None, None
-        self.edgeSelected.emit(self.hEdge is not None)
+        self.edgeSelected.emit(self.hShape is not None and (self.hShape.shape_type == 'polygon' or self.hShape.shape_type == 'linestrip') and self.hEdge is not None)
+        self.vertexSelected.emit(self.hShape is not None and (self.hShape.shape_type == 'polygon' or self.hShape.shape_type == 'linestrip') and self.hVertex is not None)
 
     def addPointToEdge(self):
         if (self.hShape is None and
@@ -282,6 +284,21 @@ class Canvas(QtWidgets.QWidget):
         self.hShape = shape
         self.hVertex = index
         self.hEdge = None
+
+    def deletePointFromShape(self):
+        if (self.hShape is None or
+                self.hVertex is None):
+            return
+        self.hShape.removePointIndex(self.hVertex)
+        # if len(self.current) > 0:
+        #     self.line[0] = self.current[-1]
+        # else:
+        #     self.current = None
+        #     self.drawingPolygon.emit(False)
+        self.hShape.highlightClear()
+        self.hVertex = None
+        self.hEdge = None
+        self.repaint()
 
     def mousePressEvent(self, ev):
         if QT5:
