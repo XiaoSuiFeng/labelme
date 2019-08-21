@@ -290,11 +290,6 @@ class Canvas(QtWidgets.QWidget):
                 self.hVertex is None):
             return
         self.hShape.removePointIndex(self.hVertex)
-        # if len(self.current) > 0:
-        #     self.line[0] = self.current[-1]
-        # else:
-        #     self.current = None
-        #     self.drawingPolygon.emit(False)
         self.hShape.highlightClear()
         self.hVertex = None
         self.hEdge = None
