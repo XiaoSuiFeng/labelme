@@ -284,15 +284,21 @@ class Canvas(QtWidgets.QWidget):
         self.hShape = shape
         self.hVertex = index
         self.hEdge = None
+        self.movingShape = True
 
-    def deletePointFromShape(self):
-        if (self.hShape is None or
+    def removeSelectedPoint(self):
+        if (self.hShape is None and
                 self.hVertex is None):
             return
-        self.hShape.removePointIndex(self.hVertex)
-        self.hShape.highlightClear()
+        shape = self.hShape
+        # point = self.prevMovePoint
+        # index = shape.nearestVertex(point, self.epsilon)
+        shape.removePointIndex(self.hVertex)
+        # shape.highlightVertex(index, shape.MOVE_VERTEX)
+        self.hShape = shape
         self.hVertex = None
         self.hEdge = None
+        self.movingShape = True  # Save changes
         self.repaint()
 
     def mousePressEvent(self, ev):
@@ -354,8 +360,11 @@ class Canvas(QtWidgets.QWidget):
         elif ev.button() == QtCore.Qt.LeftButton and self.selectedShapes:
             self.overrideCursor(CURSOR_GRAB)
         if self.movingShape:
-            self.storeShapes()
-            self.shapeMoved.emit()
+            # Only save if changes have actually been made
+            currentShapeIndex = self.shapes.index(self.hShape)
+            if not self.shapesBackups[-1][currentShapeIndex].points == self.shapes[currentShapeIndex].points:
+                self.storeShapes()
+                self.shapeMoved.emit()
 
     def endMove(self, copy):
         assert self.selectedShapes and self.selectedShapesCopy

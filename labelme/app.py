@@ -1068,7 +1068,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(self.canvas.hShape.points) <= 3:
             self.deleteSelectedShape()
         else:
-            self.canvas.deletePointFromShape()
+            self.canvas.removeSelectedPoint()
             self.setDirty()
         
     def labelSelectionChanged(self):

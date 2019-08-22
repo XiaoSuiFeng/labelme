@@ -7,8 +7,7 @@ logger_level: info
 
 flags: null
 label_flags: {.*:[iscrowd]}
-# labels: [ignore, line, person, car, truck, bus, motocycle, bicycle, traffic light]
-labels: [line, car]
+labels: [ignore, road, person, rider, car, truck, bus, motocycle, bicycle, traffic sign, traffic light, line, 单实线, 双实线, 单虚线, 双虚线, 左实右虚, 左虚右实, 人行道]
 file_search: null
 sort_labels: false
 validate_label: null
@@ -40,7 +39,7 @@ show_label_text_field: true
 label_completion: startswith
 fit_to_content:
   column: true
-  row: false
+  row: true
 
 epsilon: 10.0
 

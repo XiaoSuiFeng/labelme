@@ -7,6 +7,8 @@ from pycocotools.coco import COCO
 import datetime
 import collections
 import labelme
+from labelme._version import __version__
+import cv2
 
 try:
     import pycocotools.mask
@@ -17,8 +19,8 @@ except ImportError:
 def coco2labelme(json_src, json_des):
     jsons = glob.glob("%s/*new.json"%(json_src))
     jsons.sort()
-    types = ['line', 'person', 'car', 'truck', 'bus', 'motocycle', 'bicycle', 'traffic light']
-    cIds = ['3000','100', '200', '250', '300', '350', '450', '2000']
+    types = ['ignore', 'road', 'person', 'rider', 'car', 'truck', 'bus', 'motocycle', 'bicycle', 'traffic sign', 'traffic light', 'line', '单实线', '双实线', '单虚线', '双虚线', '左实右虚', '左虚右实', '人行道']
+    cIds = ['0', '100','200', '300', '400', '500', '600', '700', '800', '5000', '6000', '7000', '7001', '7002', '7003', '7004', '7005', '7006', '7007']
     for json_f in jsons:
         coco = COCO(json_f)
         img = coco.loadImgs(0)[0]
@@ -28,7 +30,7 @@ def coco2labelme(json_src, json_des):
         d_json_f = os.path.join(json_des, os.path.basename(json_f).replace("_new.json", ".json"))   
         with open(d_json_f, 'w') as d_f:
             obj = {}
-            obj["version"] = "3.16.2"
+            obj["version"] = __version__
             obj["flags"] = {}
             obj["lineColor"] = [0, 255, 0, 128]
             obj["fillColor"] = [255, 0, 0, 128]
@@ -44,13 +46,16 @@ def coco2labelme(json_src, json_des):
                 shape["fill_color"] = None
                 segmentation = ann["segmentation"][0]
                 if len(segmentation)%2 == 1:
-                    print("segmentation error: %s %d"%(json_f, ann["category_id"]))
+                    print("points error: %s %d"%(json_f, ann["id"]))
                     continue
                 points = np.asarray(segmentation).reshape(len(segmentation)//2, 2).tolist()
+                if len(points) < 3:
+                    print("points size < 3: %s %d"%(json_f, ann["id"]))
+                    continue
                 shape["points"] = points
                 shape["shape_type"] = "polygon"
                 flags = {}
-                if ann["iscrowd"] == 1:
+                if ann["iscrowd"] == 1 or ann["category_id"] == 0:
                     flags["iscrowd"] = True
                 else:
                     flags["iscrowd"] = False
@@ -63,8 +68,8 @@ def coco2labelme(json_src, json_des):
 def labelme2coco(json_src, json_des):
     jsons = glob.glob("%s/*.json"%(json_src))
     jsons.sort()
-    types = ['line', 'person', 'car', 'truck', 'bus', 'motocycle', 'bicycle', 'traffic light']
-    cIds = ['3000','100', '200', '250', '300', '350', '450', '2000']
+    types = ['ignore', 'road', 'person', 'rider', 'car', 'truck', 'bus', 'motocycle', 'bicycle', 'traffic sign', 'traffic light', 'line', '单实线', '双实线', '单虚线', '双虚线', '左实右虚', '左虚右实', '人行道']
+    cIds = ['0', '100','200', '300', '400', '500', '600', '700', '800', '5000', '6000', '7000', '7001', '7002', '7003', '7004', '7005', '7006', '7007']
     for image_id, label_file in enumerate(jsons): 
         now = datetime.datetime.now()
         data = dict(
@@ -124,19 +129,20 @@ def labelme2coco(json_src, json_des):
                 category_ids.append(category_id)
                 data['categories'].append(dict(
                     supercategory = None,
-                    id = category_id,
+                    id = int(category_id),
                     name = label,
                 ))
             segmentations = []  
             points = np.asarray(points).astype(np.int32).flatten().tolist()
             segmentations.append(points)
-            iscrowd = 0
-            if shape["flags"] and shape["flags"]["iscrowd"] == True:
+            if (shape["flags"] and shape["flags"]["iscrowd"] == True) or int(category_id) == 0:
                 iscrowd = 1
+            else:
+                iscrowd = 0
             data["annotations"].append(dict(
                 id = len(data['annotations']),
                 image_id = 0,
-                category_id = category_id,
+                category_id = int(category_id),
                 segmentation = segmentations,
                 area = 0,
                 bbox = [0,0,0,0],
@@ -145,6 +151,29 @@ def labelme2coco(json_src, json_des):
         with open(out_ann_file, 'w') as wf:
             json.dump(data, wf)
         
+def testCoco(json_src, image_src):
+    jsons = glob.glob("%s/*new.json"%(json_src))
+    jsons.sort()
+    types = ['ignore', 'road', 'person', 'rider', 'car', 'truck', 'bus', 'motocycle', 'bicycle', 'traffic sign', 'traffic light', 'line', '单实线', '双实线', '单虚线', '双虚线', '左实右虚', '左虚右实', '人行道']
+    cIds = ['0', '100','200', '300', '400', '500', '600', '700', '800', '5000', '6000', '7000', '7001', '7002', '7003', '7004', '7005', '7006', '7007']
+    for json_f in jsons:
+        coco = COCO(json_f)
+        img = coco.loadImgs(0)[0]
+        catIds = coco.getCatIds(catNms=types)
+        annIds = coco.getAnnIds(imgIds=[img["id"]], catIds=catIds, iscrowd=0)
+        anns = coco.loadAnns(annIds)
+        img_f = os.path.join(image_src, os.path.basename(json_f).replace("_new.json", ".jpg"))
+        img = cv2.imread(img_f)
+        for j, ann in enumerate(anns):
+            m = coco.annToMask(ann) > 0
+            img[m] = np.random.randint(0, 255, 3).tolist()
+        cv2.imshow("image",img)
+        key = cv2.waitKey(0)
+        if key == ord(' '):
+            continue
+        if key == ord('q'):
+            break
+
 
 if __name__ == "__main__":
-    coco2labelme("/home/team/data/gene", "/home/team/data/data")
+    testCoco("/home/team/data/gene", "/home/team/data/data")
