@@ -73,7 +73,8 @@ shortcuts:
   duplicate_polygon: Ctrl+D
   undo: Ctrl+Z
   undo_last_point: [Ctrl+Z, Backspace]
-  add_point_to_edge: Ctrl+Shift+P
+  add_point_to_edge: Ctrl+C
+  delete_point_from_edge: Ctrl+X
   edit_label: Ctrl+E
   edit_line_color: Alt+L
   edit_fill_color: Alt+Shift+L

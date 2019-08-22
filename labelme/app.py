@@ -322,8 +322,8 @@ class MainWindow(QtWidgets.QMainWindow):
             'Add point to the nearest edge',
             enabled=False,
         )
-        deletePoint = action('Delete current point', self.deletePointFromShape,
-                          None, 'edit', 'Delete current point from shape',
+        deletePointFromEdge = action('Delete current point', self.deletePointFromShape,
+                          shortcuts['delete_point_from_edge'], 'edit', 'Delete current point from shape',
                           enabled=False)
 
         undo = action('Undo', self.undoShapeEdit, shortcuts['undo'], 'undo',
@@ -423,7 +423,7 @@ class MainWindow(QtWidgets.QMainWindow):
             toggleKeepPrevMode=toggle_keep_prev_mode,
             delete=delete, edit=edit, copy=copy,
             undoLastPoint=undoLastPoint, undo=undo,
-            addPointToEdge=addPointToEdge, deletePoint=deletePoint,
+            addPointToEdge=addPointToEdge, deletePointFromEdge=deletePointFromEdge,
             createMode=createMode, editMode=editMode,
             createRectangleMode=createRectangleMode,
             createCircleMode=createCircleMode,
@@ -447,6 +447,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 undoLastPoint,
                 None,
                 addPointToEdge,
+                deletePointFromEdge,
                 None,
                 color1,
                 color2,
@@ -470,7 +471,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 undo,
                 undoLastPoint,
                 addPointToEdge,
-                deletePoint,
+                deletePointFromEdge,
             ),
             onLoadActive=(
                 close,
@@ -486,7 +487,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.canvas.edgeSelected.connect(self.actions.addPointToEdge.setEnabled)
-        self.canvas.vertexSelected.connect(self.actions.deletePoint.setEnabled)
+        self.canvas.vertexSelected.connect(self.actions.deletePointFromEdge.setEnabled)
 
         self.menus = utils.struct(
             file=self.menu('&File'),
