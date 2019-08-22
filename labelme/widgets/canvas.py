@@ -28,6 +28,7 @@ class Canvas(QtWidgets.QWidget):
     drawingPolygon = QtCore.Signal(bool)
     edgeSelected = QtCore.Signal(bool)
     vertexSelected = QtCore.Signal(bool)
+    doubleShapeClicked = QtCore.Signal()
 
     CREATE, EDIT = 0, 1
 
@@ -404,6 +405,9 @@ class Canvas(QtWidgets.QWidget):
         if self.canCloseShape() and len(self.current) > 3:
             self.current.popPoint()
             self.finalise()
+        else:
+            if self.hShape is not None:
+                self.doubleShapeClicked.emit()
 
     def selectShapes(self, shapes):
         self.setHiding()
